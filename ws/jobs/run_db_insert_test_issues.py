@@ -15,14 +15,17 @@ import json
 import os
 import glob
 
+import sqlalchemy
+
 from errata import db
 from errata.db.models import Issue
+from errata.utils import logger
 
 
 
 # Define command line arguments.
-_parser = argparse.ArgumentParser("Inserts test issues into errata database.")
-_parser.add_argument(
+_ARGS = argparse.ArgumentParser("Inserts test issues into errata database.")
+_ARGS.add_argument(
     "-d", "--dir",
     help="Directory containing test issues in json file format",
     dest="input_dir",
@@ -30,23 +33,24 @@ _parser.add_argument(
     )
 
 
-def _insert(obj):
-	"""Inserts an issue into db from a dictionary loaded from a json file.
+def _get_issue(obj):
+    """Maps a dictionary decoded from a file to an issue instance.
 
-	"""
-	instance = Issue()
-	instance.status = obj['state']
+    """
+    issue = Issue()
+    issue.status = obj['state']
+    issue.uid = obj['id']
 
-	db.session.insert(instance)
+    return issue
 
 
 def _yield_issues(input_dir):
-	"""Yields issues found in json files within input directory.
+    """Yields issues found in json files within input directory.
 
-	"""
-	for fpath in glob.iglob("{}/*.json".format(input_dir)):
-		with open(fpath, 'r') as f:
-			yield json.loads(f.read())
+    """
+    for fpath in glob.iglob("{}/*.json".format(input_dir)):
+        with open(fpath, 'r') as f:
+            yield _get_issue(json.loads(f.read()))
 
 
 def _main(args):
@@ -57,11 +61,14 @@ def _main(args):
         raise ValueError("Input directory is invalid.")
 
     with db.session.create():
-    	for obj in _yield_issues(args.input_dir):
-    		_insert(obj)
-
+        for issue in _yield_issues(args.input_dir):
+            try:
+                db.session.insert(issue)
+            except sqlalchemy.exc.IntegrityError:
+                logger.log_db("skipping issue {} :: already inserted".format(issue.uid))
+                db.session.rollback()
 
 
 # Main entry point.
 if __name__ == '__main__':
-    _main(_parser.parse_args())
+    _main(_ARGS.parse_args())

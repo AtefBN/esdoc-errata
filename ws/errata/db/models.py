@@ -42,6 +42,7 @@ class Issue(Entity):
     )
 
     # TODO define columns
+    uid = Column(Unicode(63), nullable=False, unique=True, default=uuid.uuid4())
     status = Column(Unicode(31), nullable=False)
     # NOTE: following columns already defined upon base class:
     #       id, row_create_date, row_update_date

@@ -35,7 +35,7 @@ def _get_formatted_message(msg, module, level):
     if msg is None:
         return _NULL_MSG
 
-    return "{} [{}] :: ES-DOC ERRATA > {} : {}".format(
+    return "{} [{}] :: ERRATA > {} : {}".format(
         unicode(arrow.get())[0:-13],
         level,
         module,
