@@ -1,8 +1,3 @@
-Introduction
-------------------------------
-
-The esdoc-errata is the errata server library.
-
 Installing
 ------------------------------
 
