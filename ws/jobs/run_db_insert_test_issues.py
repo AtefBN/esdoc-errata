@@ -49,8 +49,8 @@ def _yield_issues(input_dir):
 
     """
     for fpath in glob.iglob("{}/*.json".format(input_dir)):
-        with open(fpath, 'r') as f:
-            yield _get_issue(json.loads(f.read()))
+        with open(fpath, 'r') as fstream:
+            yield _get_issue(json.loads(fstream.read()))
 
 
 def _main(args):

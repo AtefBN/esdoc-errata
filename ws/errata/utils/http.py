@@ -13,9 +13,9 @@ import json
 
 import tornado
 
-from errata.utils.convert import dict_to_namedtuple
-from errata.utils.convert_data import convert as convert_data
-from errata.utils.convert_string import to_camel_case
+from errata.utils.convert import to_dict
+from errata.utils.convert import to_namedtuple
+from errata.utils.convert import to_camel_case
 from errata.utils import logger
 
 
@@ -51,7 +51,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
 
         body = json.loads(self.request.body)
 
-        return dict_to_namedtuple(body) if as_namedtuple else body
+        return to_namedtuple(body) if as_namedtuple else body
 
 
     def invoke(
@@ -76,7 +76,7 @@ class HTTPRequestHandler(tornado.web.RequestHandler):
             if write_raw_output:
                 self.write(data)
             else:
-                self.write(convert_data(data, to_camel_case))
+                self.write(to_dict(data, to_camel_case))
 
             # Set HTTP header.
             self.set_header("Content-Type", "application/json; charset=utf-8")

@@ -10,19 +10,12 @@
 
 
 """
-import json
-
 import tornado.web
 
 from errata import handlers
 from errata.utils import config
-from errata.utils import convert
 from errata.utils.logger import log_web as log
 
-
-
-# Ensure that tornado will encode json correctly (i.e. handle dates/UUID's).
-json._default_encoder = convert.JSONEncoder()
 
 
 def _get_endpoints():
