@@ -12,15 +12,11 @@
 """
 import datetime as dt
 
-import tornado
-
-from errata import utils
-
-from errata import db
+from errata.utils.http import HTTPRequestHandler
 
 
 
-class HeartbeatRequestHandler(tornado.web.RequestHandler):
+class HeartbeatRequestHandler(HTTPRequestHandler):
     """Operations heartbeat request handler.
 
     """
@@ -28,8 +24,14 @@ class HeartbeatRequestHandler(tornado.web.RequestHandler):
         """HTTP GET handler.
 
         """
-        self.output_encoding = 'json'
-        self.output = {
-            "message": "ERRATA web service is operational @ {}".format(dt.datetime.now())
-        }
-        utils.h.invoke(self)
+        def _set_output():
+            """Sets response to be returned to client.
+
+            """
+            self.output = {
+                "message": "ERRATA web service is operational @ {}".format(dt.datetime.now()),
+                "status": 0
+            }
+
+        # Invoke tasks.
+        self.invoke([], _set_output)

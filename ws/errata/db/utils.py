@@ -12,6 +12,7 @@
 import datetime as dt
 import random
 
+import sqlalchemy
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import Integer
@@ -44,6 +45,13 @@ class _BaseEntity(object):
 
 # Mixin with sql alchemy.
 Entity = declarative_base(metadata=METADATA, cls=_BaseEntity)
+
+
+def text_filter(qry, field, key):
+    """Applies a text based filter expression.
+
+    """
+    return qry.filter(sqlalchemy.func.upper(field) == unicode(key).strip().upper())
 
 
 def delete(entity):

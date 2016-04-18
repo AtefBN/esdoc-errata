@@ -10,10 +10,8 @@
 
 
 """
-import tornado
-
 from errata import db
-from errata import utils
+from errata.utils.http import HTTPRequestHandler
 
 
 
@@ -22,10 +20,20 @@ _PARAM_UID = 'uid'
 
 
 
-class RetrieveRequestHandler(tornado.web.RequestHandler):
+class RetrieveRequestHandler(HTTPRequestHandler):
     """Retrieve issue request handler.
 
     """
+    def __init__(self, application, request, **kwargs):
+        """Instance constructor.
+
+        """
+        super(RetrieveRequestHandler, self).__init__(application, request, **kwargs)
+
+        self.uid = None
+        self.issue = None
+
+
     def get(self):
         """HTTP GET handler.
 
@@ -42,10 +50,9 @@ class RetrieveRequestHandler(tornado.web.RequestHandler):
 
             """
             with db.session.create():
-                self.issue = {
-                    "status": "New",
-                    "uid": self.uid
-                }
+                self.issue = db.dao.get_issue(self.uid)
+
+            print self.issue
 
 
         def _set_output():
@@ -59,8 +66,9 @@ class RetrieveRequestHandler(tornado.web.RequestHandler):
 
 
         # Invoke tasks.
-        utils.h.invoke(self, [
+        # TODO input request validation.
+        self.invoke([], [
             _decode_request,
             _set_data,
             _set_output
-        ])
+            ])
