@@ -2,7 +2,13 @@
 ES-DOC Errata Usage Guide
 ============================
 
-Upon successful `installation <https://github.com/ES-DOC/esdoc-errata/blob/master/docs/installation.rst>`_ of the errata library, the following commands can invoked from the command line:  
+Upon successful `installation <https://github.com/ES-DOC/esdoc-errata/blob/master/docs/installation.rst>`_ of the errata library, activate the errata shell as follows:
+
+```
+source YOUR_WORKING_DIRECTORY/esdoc-errata/sh/activate
+```
+
+The following commands can invoked from the command line:  
 
 -	`Database commands <https://github.com/ES-DOC/esdoc-errata/blob/master/docs/usage-db.rst>`_
 
