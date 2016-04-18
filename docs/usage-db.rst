@@ -24,4 +24,4 @@ Inserts tests issues into database from all JSON files within input directory.
 
 **INPUT-DIR**
 
-	Directory within which are issue JSON files.  Defaults to [test-data](https://github.com/ES-DOC/esdoc-errata/tree/master/test-data).
+	Directory within which are issue JSON files.  Defaults to (test-data)[https://github.com/ES-DOC/esdoc-errata/tree/master/test-data].
