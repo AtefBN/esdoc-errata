@@ -1,7 +1,7 @@
 // --------------------------------------------------------
 // search/state._.js - search state.
 // --------------------------------------------------------
-(function (APP) {
+(function (APP, cookies) {
 
     // ECMAScript 5 Strict Mode
     "use strict";
@@ -20,9 +20,23 @@
             results: undefined,
             timestamp: undefined,
             total: undefined,
+        },
+
+        // Size of grid pages.
+        pageSize: cookies.get('errata-page-size'),
+
+        // Set of grid page size options.
+        pageSizeOptions: [25, 50, 100],
+
+        // Paging related state.
+        paging: {
+            current: undefined,
+            count: undefined,
+            pages: []
         }
     };
 
 }(
-    this.APP
+    this.APP,
+    this.Cookies
 ));

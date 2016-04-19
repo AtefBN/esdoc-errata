@@ -1,10 +1,19 @@
 // --------------------------------------------------------
 // core.utils.js - misceallaneous helper functions used across applications.
 // --------------------------------------------------------
-(function (APP, _, console, window) {
+(function (APP, _, $, console, window) {
 
     // ECMAScript 5 Strict Mode
     "use strict";
+
+    // Cache of loaded templates.
+    var templateCache = {};
+
+    // Outputs message to brwoser logging console.
+    // @msg          Logging message.
+    APP.utils.log = function (msg) {
+        console.log(new Date() + " :: " + APP.constants.logging.PREFIX + msg);
+    };
 
     // Opens the target url.
     // @url     URL to be opened.
@@ -77,38 +86,62 @@
     };
 
     // Renders a view.
-    // @Type          View type.
+    // @type          View type.
     // @options       View options.
     // @container     View container.
-    APP.utils.render = function (Typeof, options, container) {
-        var view;
+    APP.utils.render = function (types, options, container) {
+        var typeset, view, rendered = [];
 
-        // Render view.
-        view = new Typeof(options);
-        view = view.render();
-
-        // Append to container.
-        if (!_.isUndefined(container)) {
-            if (_.has(container, '$el')) {
-                container.$el.append(view.$el);
-            } else {
-                container.append(view.$el);
+        typeset = _.isArray(types) ? types : [types];
+        _.each(typeset, function (ViewType) {
+            view = new ViewType(options).render();
+            rendered.push(view);
+            if (!_.isUndefined(container)) {
+                if (_.has(container, '$el')) {
+                    container.$el.append(view.$el);
+                } else {
+                    container.append(view.$el);
+                }
             }
-        }
+        }, this);
 
-        // Return render root.
-        return container || view;
+        return typeset.length === 1 ? rendered[0] : rendered;
     };
 
-    // Renders a set of views.
-    // @types       Set of view types.
-    // @options     Set of view options.
-    // @container   Container view.
-    APP.utils.renderAll = function (types, options, container) {
-        _.each(types, function (ViewType) {
-            APP.utils.render(ViewType, options, container);
-        });
-        return container;
+    // Renders an html view and injects it into DOM.
+    // @template            View template.
+    // @data                View template data.
+    // @container           View container.
+    APP.utils.renderHTML = function (template, data, container) {
+        var html = data ? template(data) : template();
+
+        if (!_.isUndefined(container)) {
+            if (_.has(container, '$el')) {
+                container.$el.append(html);
+            } else {
+                container.append(html);
+            }
+        }
+    };
+
+    // Returns a rendered template.
+    // @templateID          View template ID.
+    // @templateData        View template data.
+    // @container           View container.
+    APP.utils.renderTemplate = function (templateID, templateData, view) {
+        var template;
+
+        if (!_.has(templateCache, templateID)) {
+            templateCache[templateID] = _.template($('#' + templateID).html());
+        }
+        template = templateCache[templateID];
+        if (view && view.$el) {
+            view.$el.append(template(templateData));
+        } else if (view) {
+            view.replaceWith(template(templateData));
+        } else {
+            return template(templateData);
+        }
     };
 
     // Returns URL query param value.
@@ -126,6 +159,7 @@
 }(
     this.APP,
     this._,
+    this.$,
     this.console,
     this.window
 ));

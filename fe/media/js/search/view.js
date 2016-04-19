@@ -21,7 +21,7 @@
 
         // Backbone: view renderer.
         render : function () {
-            APP.utils.renderTemplate("page-header", APP, this);
+            APP.utils.renderTemplate("template-page-header", APP, this);
 
             return this;
         },

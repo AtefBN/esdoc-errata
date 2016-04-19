@@ -80,6 +80,11 @@
             test: "http://test.es-doc.org"
         },
 
+        // Logging related.
+        logging: {
+            PREFIX: "ERRATA :: "
+        },
+
         // Text to display in lieu of null value.
         NULL_FIELD: '--',
 

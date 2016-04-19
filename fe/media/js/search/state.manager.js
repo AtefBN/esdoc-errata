@@ -36,8 +36,6 @@
         APP.state.pageCount = getPageCount(data.count);
         APP.state.pages = getPages(data.results);
         APP.state.page = data.results.length > 0 ? APP.state.pages[0] : undefined;
-
-        alert("Hello Dolly");
     };
 
     // Event handler: page setup data parsed.
@@ -56,7 +54,7 @@
         updateSearchState(data);
 
         // Fire events.
-        APP.trigger("setup:stateReady");
+        APP.trigger("setup:complete");
     });
 
     // Event handler: search completed.
