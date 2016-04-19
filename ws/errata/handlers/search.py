@@ -17,6 +17,7 @@ from errata.utils.http import HTTPRequestHandler
 
 # Query parameter names.
 _PARAM_STATUS = 'status'
+_PARAM_TIMESTAMP = 'timestamp'
 
 
 
@@ -31,7 +32,9 @@ class SearchRequestHandler(HTTPRequestHandler):
         super(SearchRequestHandler, self).__init__(application, request, **kwargs)
 
         self.status = None
-        self.issues = None
+        self.timestamp = None
+        self.issues = []
+        self.total = 0
 
 
     def get(self):
@@ -42,7 +45,9 @@ class SearchRequestHandler(HTTPRequestHandler):
             """Decodes request.
 
             """
-            self.status = self.get_argument(_PARAM_STATUS)
+            if self.get_argument(_PARAM_STATUS) != "*":
+                self.status = self.get_argument(_PARAM_STATUS)
+            self.timestamp = self.get_argument(_PARAM_TIMESTAMP)
 
 
         def _set_data():
@@ -51,6 +56,7 @@ class SearchRequestHandler(HTTPRequestHandler):
             """
             with db.session.create():
                 self.issues = db.dao.get_issues(status=self.status)
+                self.total = db.utils.get_count(db.models.Issue)
 
 
         def _set_output():
@@ -59,7 +65,10 @@ class SearchRequestHandler(HTTPRequestHandler):
             """
             self.output_encoding = 'json'
             self.output = {
-                'issues': self.issues
+                'count': len(self.issues),
+                'results': self.issues,
+                'timestamp': self.timestamp,
+                'total': self.total
             }
 
 

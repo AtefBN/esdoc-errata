@@ -10,6 +10,8 @@
 
 
 """
+import os
+
 import tornado.web
 
 from errata import handlers
@@ -18,14 +20,25 @@ from errata.utils.logger import log_web as log
 
 
 
-def _get_endpoints():
+def _get_path_to_front_end():
+    """Return path to the front end javascript application.
+
+    """
+    dpath = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'fe')
+    log("Front-end static files @ {0}".format(dpath))
+
+    return dpath
+
+
+def _get_app_endpoints():
     """Returns map of application endpoints to handlers.
 
     """
     endpoints = {
         (r'/', handlers.HeartbeatRequestHandler),
-        (r'/issue/retrieve', handlers.RetrieveRequestHandler),
-        (r'/issue/search', handlers.SearchRequestHandler)
+        (r'/1/issue/retrieve', handlers.RetrieveRequestHandler),
+        (r'/1/issue/search', handlers.SearchRequestHandler),
+        (r'/1/issue/search/setup', handlers.SearchSetupRequestHandler),
     }
 
     log("Endpoint to handler mappings:")
@@ -35,12 +48,14 @@ def _get_endpoints():
     return endpoints
 
 
-def _get_settings():
-    """Returns application settings.
+def _get_app_settings():
+    """Returns app settings.
 
     """
     return {
-        "cookie_secret": config.cookie_secret
+        "cookie_secret": config.cookie_secret,
+        "compress_response": True,
+        "static_path": _get_path_to_front_end()
     }
 
 
@@ -48,9 +63,9 @@ def _get_app():
     """Returns application instance.
 
     """
-    return tornado.web.Application(_get_endpoints(),
+    return tornado.web.Application(_get_app_endpoints(),
                                    debug=(config.mode == 'dev'),
-                                   **_get_settings())
+                                   **_get_app_settings())
 
 
 def run():
